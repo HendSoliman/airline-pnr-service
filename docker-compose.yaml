@@ -1,0 +1,32 @@
+## docker-compose down --rmi all
+#  docker-compose build --no-cache
+#  docker-compose up
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongo-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=pnrdb
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  pnr-service:
+    build: .
+    image: airline-pnr-service:latest
+    container_name: pnr-service
+    environment:
+      - MONGO_USER=${DB_USER}
+      - MONGO_PASS=${DB_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+

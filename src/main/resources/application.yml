@@ -1,0 +1,10 @@
+#spring.application.name=pnr-booking-info-service
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+spring:
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER}:${MONGO_PASS}@mongo-db:27017/pnrdb?authSource=admin
