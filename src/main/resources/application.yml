@@ -1,10 +1,14 @@
-#spring.application.name=pnr-booking-info-service
 management:
   endpoints:
     web:
       exposure:
-        include: health, info
+        include: health, info, prometheus, metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
 spring:
+  application:
+    name: pnr-service
   data:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASS}@mongo-db:27017/pnrdb?authSource=admin
