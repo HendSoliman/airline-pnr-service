@@ -133,4 +133,6 @@ src/
 - TODO 
 
 ## Getting Started
--- TODO 
+-- TODO
+## Swagger Access
+``` http://localhost:8080/swagger-ui/index.html```

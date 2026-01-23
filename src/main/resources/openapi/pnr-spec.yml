@@ -1,0 +1,160 @@
+#  http://localhost:8080/swagger-ui/index.html
+openapi: 3.1.0
+info:
+  title: PNR Booking Service API
+  version: 1.0.0
+  description: Retrieve aggregated PNR booking information
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /booking/{pnr}:
+    get:
+      tags:
+        - booking
+      summary: Retrieve booking information for a given PNR
+      operationId: getBookingByPnr
+      parameters:
+        - name: pnr
+          in: path
+          required: true
+          description: Passenger Name Record
+          schema:
+            type: string
+            example: GHTW42
+      responses:
+        '200':
+          description: Booking information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+           $ref: '#/components/responses/NotFound'
+        '500':
+            $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    BookingResponse:
+      type: object
+      properties:
+        pnr:
+          type: string
+          example: GHTW42
+        cabinClass:
+          type: string
+          example: ECONOMY
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Passenger'
+        flights:
+          type: array
+          items:
+            $ref: '#/components/schemas/Flight'
+
+    Passenger:
+      type: object
+      properties:
+        passengerNumber:
+          type: integer
+          example: 1
+        customerId:
+          type: string
+          nullable: true
+          example: 1216
+        fullName:
+          type: string
+          example: James Morgan McGill
+        seat:
+          type: string
+          example: 32D
+        ticketUrl:
+          type: string
+          nullable: true
+          example: emirates.com?ticket=someTicketRef
+        baggage:
+          $ref: '#/components/schemas/Baggage'
+
+    Baggage:
+      type: object
+      properties:
+        allowanceUnit:
+          type: string
+          example: kg
+        checkedAllowanceValue:
+          type: integer
+          example: 25
+        carryOnAllowanceValue:
+          type: integer
+          example: 7
+
+    Flight:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+          example: EK231
+        departureAirport:
+          type: string
+          example: DXB
+        departureTimeStamp:
+          type: string
+          format: date-time
+          example: 2025-11-11T02:25:00+00:00
+        arrivalAirport:
+          type: string
+          example: IAD
+        arrivalTimeStamp:
+          type: string
+          format: date-time
+          example: 2025-11-11T08:10:00+00:00
+
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          description: URI reference identifying the problem type
+        title:
+          type: string
+          description: Short, human-readable summary of the problem
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+        instance:
+          type: string
+          description: URI reference identifying the specific occurrence
+      required:
+        - type
+        - title
+        - status
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+
+    InternalServerError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
