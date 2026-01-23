@@ -1,5 +1,6 @@
 package com.airline.pnr.controller;
 
+import com.airline.pnr.domain.exception.BookingNotFoundException;
 import com.airline.pnr.openapi.api.BookingApi;
 import com.airline.pnr.openapi.model.BookingResponse;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +11,8 @@ public class PnrController implements BookingApi {
     
     @Override
     public ResponseEntity<BookingResponse> getBookingByPnr(String pnr) {
-        return ResponseEntity.noContent().build();
+        
+        throw new BookingNotFoundException(pnr);
     }
-    
-    
+  
 }
