@@ -1,0 +1,14 @@
+package com.airline.pnr.domain.model;
+
+import com.airline.pnr.domain.valueobjects.CustomerId;
+
+public record Passenger(
+        int passengerNumber,
+        String firstName,
+        String middleName,
+        String lastName,
+        CustomerId customerId,
+        String seat,
+        String ticketUrl,
+        BaggageAllowance baggage
+) {}

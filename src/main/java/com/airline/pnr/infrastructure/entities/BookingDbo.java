@@ -1,4 +1,4 @@
-package com.airline.pnr.infrastructure.persistence.entities;
+package com.airline.pnr.infrastructure.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -16,20 +16,20 @@ public record BookingDbo(
         @Id String id,
         @Indexed String bookingReference,
         String cabinClass,
-        List<Passenger> passengers,
-        List<Flight> flights,
+        List<PassengerDbo> passengers,
+        List<FlightDbo> flights,
         @CreatedDate Instant createdAt,
         @LastModifiedDate Instant updatedAt
 )
 {
-    public record Passenger(String firstName, Optional<String> middleName,
-                            String lastName, int passengerNumber, Optional<String>  customerId,
-                            String seat)
+    public record PassengerDbo(String firstName, Optional<String> middleName,
+                               String lastName, int passengerNumber, Optional<String>  customerId,
+                               String seat)
     {
     }
     
-    public record Flight(String flightNumber, String departureAirport, OffsetDateTime departureTimeStamp,
-                         String arrivalAirport, OffsetDateTime arrivalTimeStamp)
+    public record FlightDbo(String flightNumber, String departureAirport, OffsetDateTime departureTimeStamp,
+                            String arrivalAirport, OffsetDateTime arrivalTimeStamp)
     {
     }
 }
