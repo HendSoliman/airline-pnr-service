@@ -11,6 +11,5 @@ spring:
 
 springdoc:
   swagger-ui:
-    # This must match the ResourceHandler path defined above
     url: /openapi/pnr-spec.yml
     path: /swagger-ui.html

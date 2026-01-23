@@ -11,6 +11,8 @@ services:
       - MONGO_INITDB_DATABASE=pnrdb
     ports:
       - "27017:27017"
+    volumes:
+      - ./init-mongodb:/docker-entrypoint-initdb.d
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 5s
@@ -27,6 +29,6 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      mongodb:
+      mongodb :
         condition: service_healthy
 
