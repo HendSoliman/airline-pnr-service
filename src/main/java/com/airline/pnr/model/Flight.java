@@ -1,10 +1,11 @@
-package com.airline.pnr.domain.model;
+package com.airline.pnr.model;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 
 public record Flight(
         String flightNumber,
         String departureAirport,
-        OffsetDateTime departureTimeStamp,
+        Instant departureTimeStamp,
         String arrivalAirport,
-        OffsetDateTime arrivalTimeStamp
+        Instant arrivalTimeStamp
 ) {}

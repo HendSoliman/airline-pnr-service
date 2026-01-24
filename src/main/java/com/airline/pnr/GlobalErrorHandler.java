@@ -1,4 +1,4 @@
-package com.airline.pnr.infrastructure;
+package com.airline.pnr;
 
 import com.airline.pnr.domain.exception.PnrDomainException;
 import com.airline.pnr.openapi.model.ProblemDetails;
@@ -22,8 +22,11 @@ public class GlobalErrorHandler {
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetails> handleExceptionsGraceful(Exception ex, HttpServletRequest request) {
-        // Java 21 enhanced switch for cleaner exception handling
+        
+        log.debug("Handling exception: {}", ex.getClass().getSimpleName(), ex);
+
         return switch (ex) {
+            
             case PnrDomainException d -> createResponse(d.getStatus(), d.getTitle(), d.getMessage(), request); // Missing Resource
             case NoResourceFoundException e ->
                     createResponse(404, "Not Found", "Wrong API ", request);

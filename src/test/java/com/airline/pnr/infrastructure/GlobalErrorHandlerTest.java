@@ -1,5 +1,6 @@
 package com.airline.pnr.infrastructure;
 
+import com.airline.pnr.GlobalErrorHandler;
 import com.airline.pnr.domain.exception.BookingNotFoundException;
 import com.airline.pnr.domain.exception.PnrDomainException;
 import com.airline.pnr.openapi.model.ProblemDetails;

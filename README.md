@@ -38,6 +38,20 @@ The service must handle:
 | **Coverage**         | JaCoCo                  | 0.8.12+ | Code coverage analysis & enforcement          |
 | **Containerization** | Docker + Docker Compose | Latest  | Local dev and deployment readiness            |
 
+###  Tech Reference
+- [Eclipse Vert.x Documentation](https://vertx.io/docs/)
+- [Spring Boot Documentation](https://spring.io/projects/spring-boot)
+- [ Monitoring Java Applications with Prometheus and Grafana](https://www.youtube.com/watch?v=27Yc3gdeuQ0)
+- [ Introduction to Spring Data MongoDB ](https://www.baeldung.com/spring-data-mongodb-tutorial)
+- https://docs.spring.io/spring-data/mongodb/reference/mongodb/mapping/custom-conversions.html
+- https://docs.spring.io/spring-data/mongodb/reference/mongodb/mapping/document-references.html#page-title
+- [ Pattern Matching for switch Expressions and Statements ](https://docs.oracle.com/en/java/javase/22/language/pattern-matching-switch-expressions-and-statements.html#GUID-E69EEA63-E204-41B4-AA7F-D58B26A3B232)
+- [Spring WebClient vs. RestTemplate](https://www.baeldung.com/spring-webclient-resttemplate)
+- -https://docs.spring.io/spring-framework/reference/testing/webtestclient.html
+- Tests: https://rest-assured.io/ Framework Independent: I
+- https://medium.com/@eng.hibrahem/ddd-and-clean-architecture-part-1-9a514b964395
+- https://mapstruct.org/
+
 ## REST API Endpoints
 
 ### Retrieve Booking by PNR
@@ -96,9 +110,39 @@ The service must handle:
 ```
 TODO 
 src/
-├── main/
-│   ├── java/com/airline/pnr/
-
+└── src/main/java/com/company/pnr
+com.airline.pnr
+├── api                         <-- REST Layer (Web)
+│   ├── PnrController.java      <-- Implements generated BookingApi
+│   └── PnrControllerConverter.java <-- Maps Read Model -> OpenAPI DTOs
+│
+├── application                 <-- Orchestration Layer (Pure Logic)
+│   └── GetBookingInfoQueryService.java <-- Orchestrates parallel data fetching
+│
+├── model                       <-- Read Models (Data Contracts)
+│   ├── BookingInformation.java <-- Record with .withDetails() stitching logic
+│   ├── Passenger.java          <-- Domain Record
+│   ├── Flight.java             <-- Domain Record
+│   └── BaggageAllowance.java   <-- Domain Record
+│
+├── infrastructure              <-- Implementation Detail (The "How")
+│   ├── db                      <-- Low-level Database Access
+│   │   ├── entities            <-- @Document DBOs (BookingDbo, BaggageDbo, etc.)
+│   │   ├── BookingRepository.java <-- Spring Data Mongo Interface
+│   │   ├── BaggageRepository.java <-- Spring Data Mongo Interface
+│   │   └── TicketRepository.java  <-- Spring Data Mongo Interface
+│   │
+│   └── persistence             <-- Domain-to-DB Bridge
+│       ├── PnrQueryRepository.java    <-- Interface (defined in application or here)
+│       ├── PnrQueryRepositoryImpl.java <-- Hides DBOs, returns Read Models
+│       └── PnrDbMapper.java           <-- Maps DBOs -> Read Models
+│
+└── domain
+    ├── exception
+    │   └── BookingNotFoundException.java
+    └── valueobjects
+        ├── Pnr.java
+        └── CustomerId.java
 │   └── resources/
 │       ├── application.properties            # Application configuration
 ├── test/
@@ -136,3 +180,45 @@ src/
 -- TODO
 ## Swagger Access
 ``` http://localhost:8080/swagger-ui/index.html```
+
+
+
+### Setup Instructions
+
+1. **Clone the project**
+   ```bash
+   Clone https://github.com/HendSoliman/airline-pnr-service.git
+   ```
+
+2. **Install dependencies**
+   ```bash
+   mvn clean install
+   ```
+
+3. **Run the application**
+   ```bash
+   mvn exec:java
+   # OR
+   mvn compile exec:java -Dexec.mainClass="com.dvtsoftware.airline.booking.MainVerticle"
+   ```
+
+4. **Run tests**
+   ```bash
+   mvn test
+   ```
+
+5. **Check test coverage**
+   ```bash
+   # Run tests with coverage report
+   mvn clean verify
+   
+   # View coverage report
+   open target/site/jacoco/index.html
+   ```
+6. **Monitoring**
+- Connect Grafana to Prometheus
+   ```bash
+Open Grafana (http://localhost:3000)
+open Prometheus ( http://localhost:9090/targets )
+Run Jmeter : jmeter
+   ```

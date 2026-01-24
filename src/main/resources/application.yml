@@ -13,7 +13,34 @@ spring:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASS}@mongo-db:27017/pnrdb?authSource=admin
 
-springdoc:
+
+  jackson:
+    default-property-inclusion=non_absent:
+    springdoc:
   swagger-ui:
     url: /openapi/pnr-spec.yml
     path: /swagger-ui.html
+
+
+
+  threads:
+    virtual:
+      enabled=true:
+
+  logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate=DEBUG:
+
+
+    com:
+      airline:
+        pnr: DEBUG
+
+
