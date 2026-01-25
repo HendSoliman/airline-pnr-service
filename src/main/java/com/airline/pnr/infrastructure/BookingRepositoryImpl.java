@@ -3,9 +3,10 @@ package com.airline.pnr.infrastructure;
 
 import com.airline.pnr.application.contract.BookingDomainRepo;
 import com.airline.pnr.domain.exception.BookingNotFoundException;
-import com.airline.pnr.infrastructure.db.BookingMongoRepository;
-import com.airline.pnr.infrastructure.mapper.PnrDbMapper;
 import com.airline.pnr.model.Booking;
+import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.MongoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -15,22 +16,26 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
     
     private static final Logger log = LoggerFactory.getLogger(BookingRepositoryImpl.class);
     
-    private final BookingMongoRepository mongoRepo;
+    private final MongoClient mongoClient;
     
-    private final PnrDbMapper mapper;
-    
-    public BookingRepositoryImpl(BookingMongoRepository mongoRepo, PnrDbMapper mapper) {
-        this.mongoRepo = mongoRepo;
-        this.mapper = mapper;
+    public BookingRepositoryImpl(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
     }
     
+    
     @Override
-    public Booking findByPnr(String pnr) {
+    public Future<Booking> findByPnr(String pnr) {
         log.debug("Repository accessing MongoDB for Booking...");
-  
-        return  mongoRepo.findByBookingReference(pnr)
-                         .map(mapper::toReadModel)
-                         .orElseThrow(() -> new BookingNotFoundException(pnr));
         
+        JsonObject query = new JsonObject().put("bookingReference", pnr);
+        return mongoClient.findOne("bookings", query, null).compose(json -> {
+            if (json == null) {
+                log.error("Booking with PNR {} not found.", pnr);
+                return Future.failedFuture(new BookingNotFoundException("Booking with PNR " + pnr + " not found."));
+            }
+            Booking booking = json.mapTo(Booking.class);
+            return Future.succeededFuture(booking);
+        });
+
     }
 }

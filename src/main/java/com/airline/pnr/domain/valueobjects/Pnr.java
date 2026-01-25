@@ -1,9 +1,11 @@
 package com.airline.pnr.domain.valueobjects;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public record Pnr(String value) {
+public record Pnr(@JsonValue String value) {
     
     private static final Pattern PNR_PATTERN = Pattern.compile("^[A-Z0-9]{6}$");
     

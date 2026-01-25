@@ -51,6 +51,10 @@ The service must handle:
 - Tests: https://rest-assured.io/ Framework Independent: I
 - https://medium.com/@eng.hibrahem/ddd-and-clean-architecture-part-1-9a514b964395
 - https://mapstruct.org/
+- https://www.baeldung.com/spring-vertx
+- https://www.baeldung.com/vertx
+- https://vertx.io/docs/vertx-mongo-client/java/
+- Vert.x OpenAPI Preview https://vertx.io/docs/vertx-openapi/java/#_openapicontract
 
 ## REST API Endpoints
 

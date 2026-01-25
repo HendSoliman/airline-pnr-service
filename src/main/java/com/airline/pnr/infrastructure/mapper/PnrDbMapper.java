@@ -19,9 +19,6 @@ public class PnrDbMapper {
      * they are populated later by the Service using .withDetails().
      */
     public Booking toReadModel(BookingEntity dbo) {
-        if (dbo == null) {
-            return null;
-        }
         
         return new Booking(
                 new Pnr(dbo.bookingReference()),

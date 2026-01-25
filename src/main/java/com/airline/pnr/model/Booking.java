@@ -1,10 +1,12 @@
 package com.airline.pnr.model;
 
 import com.airline.pnr.domain.valueobjects.Pnr;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record Booking(
         Pnr bookingReference,
         String cabinClass,

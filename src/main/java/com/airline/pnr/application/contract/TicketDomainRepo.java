@@ -1,10 +1,12 @@
 package com.airline.pnr.application.contract;
 
+import io.vertx.core.Future;
+
 import java.util.List;
 import java.util.Map;
 
 public interface TicketDomainRepo {
     //  a Map of PassengerId -> TicketUrl
-    Map<Integer, String> findTicketUrls(List<Integer> passengerIds, String pnr);
+    Future<Map<Integer, String>> findTicketUrls(List<Integer> passengerIds, String pnr);
     
 }

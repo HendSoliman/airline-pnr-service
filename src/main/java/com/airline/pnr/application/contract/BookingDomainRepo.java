@@ -1,7 +1,8 @@
 package com.airline.pnr.application.contract;
 
 import com.airline.pnr.model.Booking;
+import io.vertx.core.Future;
 
 public interface BookingDomainRepo {
-    Booking findByPnr(String pnr);
+    Future<Booking> findByPnr(String pnr);
 }

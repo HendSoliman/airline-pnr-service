@@ -1,13 +1,13 @@
 package com.airline.pnr.infrastructure.db;
 
 import com.airline.pnr.infrastructure.entities.BaggageAllowanceEntity;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface BaggageMongoRepository extends MongoRepository<BaggageAllowanceEntity, String> {
-
-    @Query("{ 'passengerNumber': { $in: ?0 }, 'bookingReference': ?1 }")
-    List<BaggageAllowanceEntity> findAllByPassengerIdsAndBookingReference(List<Integer> passengerIds, String bookingReference);
+public interface BaggageMongoRepository extends ReactiveMongoRepository<BaggageAllowanceEntity, String> {
+    
+    Flux<BaggageAllowanceEntity> findByBookingReferenceAndPassengerNumberIn(String pnr, List<Integer> ids);
 }
+

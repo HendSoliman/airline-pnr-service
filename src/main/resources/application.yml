@@ -12,6 +12,7 @@ spring:
   data:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASS}@mongo-db:27017/pnrdb?authSource=admin
+#       uri: mongodb://hend:secret@localhost:27017/pnrdb?authSource=admin
 
 
   jackson:
