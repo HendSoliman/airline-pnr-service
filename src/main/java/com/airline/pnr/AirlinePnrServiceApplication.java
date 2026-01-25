@@ -6,14 +6,11 @@ import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfigurat
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 
-@SpringBootApplication(exclude = {
-        org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration.class
-})
+@SpringBootApplication
+@EnableReactiveMongoRepositories
 @ComponentScan(basePackages = {"com.airline.pnr"}) // Force scan of all sub-packages
 public class AirlinePnrServiceApplication {
 

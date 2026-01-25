@@ -6,8 +6,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.List;
 
-public interface BaggageMongoRepository extends ReactiveMongoRepository<BaggageAllowanceEntity, String> {
+public interface ReactiveBaggageRepository extends ReactiveMongoRepository<BaggageAllowanceEntity, String> {
     
     Flux<BaggageAllowanceEntity> findByBookingReferenceAndPassengerNumberIn(String pnr, List<Integer> ids);
 }
-
