@@ -2,7 +2,7 @@
 #  docker-compose build --no-cache
 #  docker-compose up
 # docker compose up --build
-#docker-compose up -d --build pnr-service
+# docker-compose up -d --build pnr-service
 services:
   mongodb:
     image: mongo:latest

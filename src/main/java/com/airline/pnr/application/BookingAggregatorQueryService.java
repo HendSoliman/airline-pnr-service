@@ -3,6 +3,7 @@ package com.airline.pnr.application;
 import com.airline.pnr.application.contract.BaggageDomainRepo;
 import com.airline.pnr.application.contract.BookingDomainRepo;
 import com.airline.pnr.application.contract.TicketDomainRepo;
+import com.airline.pnr.config.ThreadLog;
 import com.airline.pnr.model.BaggageAllowance;
 import com.airline.pnr.model.Booking;
 import com.airline.pnr.model.Passenger;
@@ -33,20 +34,30 @@ public class BookingAggregatorQueryService {
     }
     
     public Future<Booking> execute(String pnr) {
-        log.info("Starting Reactive Engine Logic for Booking retrieval: {}", pnr);
+        log.info("Service START pnr={} | {}", pnr, ThreadLog.current());
+//        log.info("Starting Reactive Engine Logic for Booking retrieval: {}", pnr);
         long startTime = System.currentTimeMillis();
         
-        // 1 Fetch Core Booking
-        return bookingRepo.findByPnr(pnr).compose(booking -> {
-            List<Integer> ids = booking.passengers().stream()
+        // 1 Fetch Core Booking  Vert.x takes over
+        return bookingRepo.findByPnr(pnr)
+                          .onSuccess(b ->
+                                  log.info("Booking fetched | {}", ThreadLog.current())
+                          ).compose(booking -> {
+                    log.info("Compose passengers | {}", ThreadLog.current());
+                    
+                    List<Integer> ids = booking.passengers().stream()
                                        .map(Passenger::passengerNumber).toList();
-            
-            log.info("Found {} passengers for PNR: {}", ids.size(), pnr);
+                    
+                    log.info("Found {} passengers for PNR: {}", ids.size(), pnr);
             
             // 2. Parallel Fetch
-            
-            return fetchBaggagesAndTicketsInParallel(pnr, ids)
+                    
+                    return fetchBaggagesAndTicketsInParallel(pnr, ids).onSuccess(cf ->
+                                                                              log.info("Parallel fetch DONE | {}", ThreadLog.current())
+                                                                      )
                     .map(aggregated -> {
+                        log.info("Aggregating results | {}", ThreadLog.current());
+                        
                         List<BaggageAllowance> baggages = aggregated.resultAt(0);
                         Map<Integer, String> tickets = aggregated.resultAt(1);
                         
@@ -55,7 +66,7 @@ public class BookingAggregatorQueryService {
                         Booking result = booking.withDetails(baggages, tickets);
                         
                         
-                        log.info("ompleted in {}ms for PNR: {}", System.currentTimeMillis() - startTime, pnr);
+                        log.info("Completed in {}ms for PNR: {}", System.currentTimeMillis() - startTime, pnr);
                         
                         return result;
                     });
@@ -69,35 +80,3 @@ public class BookingAggregatorQueryService {
         );
     }
 }
-//
-//public Mono<BookingResponse> getBookingByPnr(String pnr) {
-//    long start = System.currentTimeMillis();
-//
-//    return bookingRepo.findByBookingReference(pnr)
-//                      .flatMap(booking -> {
-//                          List<Integer> passengerIds = booking.passengers()
-//                                                              .stream()
-//                                                              .map(BookingEntity.PassengerDbo::passengerNumber)
-//                                                              .toList();
-//
-//                          Mono<List<BaggageEntity>> baggagesMono = baggageRepo
-//                                  .findByBookingReferenceAndPassengerNumberIn(pnr, passengerIds)
-//                                  .collectList();
-//
-//                          Mono<List<TicketEntity>> ticketsMono = ticketRepo
-//                                  .findByBookingReferenceAndPassengerNumberIn(pnr, passengerIds)
-//                                  .collectList();
-//
-//                          return Mono.zip(baggagesMono, ticketsMono)
-//                                     .map(tuple -> {
-//                                         List<BaggageEntity> baggages = tuple.getT1();
-//                                         List<TicketEntity> tickets = tuple.getT2();
-//
-//                                         // Publish event via Vert.x EventBus
-//                                         vertx.eventBus().publish("pnr.fetched", pnr);
-//
-//                                         return BookingResponse.from(booking, baggages, tickets);
-//                                     });
-//                      })
-//                      .doOnSuccess(res -> log.info("Booking {} aggregated in {}ms", pnr, System.currentTimeMillis() - start));
-//}

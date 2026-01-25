@@ -2,7 +2,7 @@ package com.airline.pnr.infrastructure;
 
 
 import com.airline.pnr.application.contract.BookingDomainRepo;
-import com.airline.pnr.domain.exception.BookingNotFoundException;
+import com.airline.pnr.config.ThreadLog;
 import com.airline.pnr.model.Booking;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -25,17 +25,29 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
     
     @Override
     public Future<Booking> findByPnr(String pnr) {
-        log.debug("Repository accessing MongoDB for Booking...");
+        
+        log.debug("Repo ENTER pnr={} | {}", pnr, ThreadLog.current());
+//        log.debug("Repository accessing MongoDB for Booking...");
         
         JsonObject query = new JsonObject().put("bookingReference", pnr);
-        return mongoClient.findOne("bookings", query, null).compose(json -> {
-            if (json == null) {
-                log.error("Booking with PNR {} not found.", pnr);
-                return Future.failedFuture(new BookingNotFoundException("Booking with PNR " + pnr + " not found."));
-            }
-            Booking booking = json.mapTo(Booking.class);
-            return Future.succeededFuture(booking);
-        });
-
+        
+        return mongoClient.findOne("bookings", query, null)
+                          .onSuccess(json ->
+                                  log.debug("Mongo result received | {}", ThreadLog.current())
+                          )
+                          .onFailure(err ->
+                                  log.error("Mongo failure | {}", ThreadLog.current(), err)
+                          )
+                          .map(json -> json.mapTo(Booking.class));
     }
+//        return mongoClient.findOne("bookings", query, null).compose(json -> {
+//            if (json == null) {
+//                log.error("Booking with PNR {} not found.", pnr);
+//                return Future.failedFuture(new BookingNotFoundException("Booking with PNR " + pnr + " not found."));
+//            }
+//            Booking booking = json.mapTo(Booking.class);
+//            return Future.succeededFuture(booking);
+//        });
+
+
 }
