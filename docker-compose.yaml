@@ -3,6 +3,11 @@
 #  docker-compose up
 # docker compose up --build
 #docker-compose up -d --build pnr-service
+#  docker-compose down -v
+# Clean, build the jar, and force docker to ignore the cache
+#  ./mvnw clean package -DskipTests
+#  docker-compose up --build --force-recreate
+
 services:
   mongodb:
     image: mongo:latest

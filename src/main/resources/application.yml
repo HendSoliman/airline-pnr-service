@@ -7,11 +7,18 @@ management:
     tags:
       application: ${spring.application.name}
 spring:
+
+  #---------- Virtual Thread
+  threads:
+    virtual:
+      enabled: false
   application:
     name: pnr-service
   data:
     mongodb:
       uri: mongodb://${MONGO_USER}:${MONGO_PASS}@mongo-db:27017/pnrdb?authSource=admin
+#       uri: mongodb://hend:secret@localhost:27017/pnrdb?authSource=admin
+
 
 
   jackson:
@@ -22,10 +29,6 @@ spring:
     path: /swagger-ui.html
 
 
-
-  threads:
-    virtual:
-      enabled=true:
 
   logging:
   pattern:
