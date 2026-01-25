@@ -18,9 +18,9 @@ public class PnrQueryController implements BookingApi {
     private static final Logger log = LoggerFactory.getLogger(PnrQueryController.class);
     
     private final BookingAggregatorQueryService bookingInfoQueryService;
-    private final PnrResponseMapper mapper;
+    private final BookingResponseMapper mapper;
 
-    public PnrQueryController(BookingAggregatorQueryService bookingInfoQueryService, PnrResponseMapper mapper) {
+    public PnrQueryController(BookingAggregatorQueryService bookingInfoQueryService, BookingResponseMapper mapper) {
         this.bookingInfoQueryService = bookingInfoQueryService;
         this.mapper = mapper;
     }

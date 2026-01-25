@@ -29,6 +29,7 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
         log.debug("Repo ENTER pnr={} | {}", pnr, ThreadLog.current());
 //        log.debug("Repository accessing MongoDB for Booking...");
         
+        
         JsonObject query = new JsonObject().put("bookingReference", pnr);
         
         return mongoClient.findOne("bookings", query, null)
@@ -40,14 +41,5 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
                           )
                           .map(json -> json.mapTo(Booking.class));
     }
-//        return mongoClient.findOne("bookings", query, null).compose(json -> {
-//            if (json == null) {
-//                log.error("Booking with PNR {} not found.", pnr);
-//                return Future.failedFuture(new BookingNotFoundException("Booking with PNR " + pnr + " not found."));
-//            }
-//            Booking booking = json.mapTo(Booking.class);
-//            return Future.succeededFuture(booking);
-//        });
-
 
 }

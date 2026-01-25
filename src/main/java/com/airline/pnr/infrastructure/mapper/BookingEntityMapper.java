@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class PnrDbMapper {
+public class BookingEntityMapper {
     /**
      * Converts the raw Database Object (DBO) into the clean Read Model.
      * Note: ticketUrl and baggage are initialized as null here;

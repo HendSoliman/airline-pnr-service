@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  */
 
 @Component
-public class PnrResponseMapper {
+public class BookingResponseMapper {
     
     public BookingResponse toResponse(Booking model) {
         BookingResponse response = new BookingResponse();
