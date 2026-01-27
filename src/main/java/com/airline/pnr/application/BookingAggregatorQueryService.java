@@ -4,6 +4,7 @@ import com.airline.pnr.application.contract.BaggageDomainRepo;
 import com.airline.pnr.application.contract.BookingDomainRepo;
 import com.airline.pnr.application.contract.TicketDomainRepo;
 import com.airline.pnr.config.ThreadLog;
+import com.airline.pnr.domain.valueobjects.Pnr;
 import com.airline.pnr.model.BaggageAllowance;
 import com.airline.pnr.model.Booking;
 import com.airline.pnr.model.Passenger;
@@ -35,48 +36,62 @@ public class BookingAggregatorQueryService {
     
     public Future<Booking> execute(String pnr) {
         log.info("Service START pnr={} | {}", pnr, ThreadLog.current());
-//        log.info("Starting Reactive Engine Logic for Booking retrieval: {}", pnr);
-        long startTime = System.currentTimeMillis();
+        long start = System.currentTimeMillis();
         
-        // 1 Fetch Core Booking  Vert.x takes over
-        return bookingRepo.findByPnr(pnr)
-                          .onSuccess(b ->
-                                  log.info("Booking fetched | {}", ThreadLog.current())
-                          ).compose(booking -> {
-                    log.info("Compose passengers | {}", ThreadLog.current());
-                    
-                    List<Integer> ids = booking.passengers().stream()
-                                       .map(Passenger::passengerNumber).toList();
-                    
-                    log.info("Found {} passengers for PNR: {}", ids.size(), pnr);
-            
-            // 2. Parallel Fetch
-                    
-                    return fetchBaggagesAndTicketsInParallel(pnr, ids).onSuccess(cf ->
-                                                                              log.info("Parallel fetch DONE | {}", ThreadLog.current())
-                                                                      )
-                    .map(aggregated -> {
-                        log.info("Aggregating results | {}", ThreadLog.current());
-                        
-                        List<BaggageAllowance> baggages = aggregated.resultAt(0);
-                        Map<Integer, String> tickets = aggregated.resultAt(1);
-                        
-                        
-                        // Filling the Booking
-                        Booking result = booking.withDetails(baggages, tickets);
-                        
-                        
-                        log.info("Completed in {}ms for PNR: {}", System.currentTimeMillis() - startTime, pnr);
-                        
-                        return result;
-                    });
-        });
+        return fetchCoreBooking(pnr)
+                .compose(this::composeBookingBaggageAndTicket)
+                .map(enrichedBooking -> logAndReturn(enrichedBooking, start));
     }
     
-    private CompositeFuture fetchBaggagesAndTicketsInParallel(String pnr, List<Integer> ids) {
-        return Future.all(
-                baggageRepo.findBaggagesOfPassengers(ids, pnr),
-                ticketRepo.findTicketUrls(ids, pnr)
+    
+    private Booking logAndReturn(Booking booking, long start) {
+        log.info(
+                "Service DONE in {}ms | {}",
+                System.currentTimeMillis() - start,
+                ThreadLog.current()
         );
+        return booking;
+    }
+    
+    // --- 2️⃣ Fetch core booking ---
+    private Future<Booking> fetchCoreBooking(String pnr) {
+        return bookingRepo.findByPnr(pnr)
+                          .onSuccess(b -> log.info("Booking fetched | {}", ThreadLog.current()));
+    }
+    
+    // --- 3️⃣ Compose dependent work ---
+    private Future<Booking> composeBookingBaggageAndTicket(Booking booking) {
+        List<Integer> passengerIds = extractPassengerIds(booking);
+        log.info("Found {} passengers | {}", passengerIds.size(), ThreadLog.current());
+        
+        return fetchBaggagesAndTickets(booking.bookingReference(), passengerIds)
+                .onSuccess(v -> log.info("Parallel fetch DONE | {}", ThreadLog.current()))
+                .map(cf -> aggregateBookingDetails(booking, cf));
+    }
+    
+    // --- Helper: extract passenger IDs ---
+    private List<Integer> extractPassengerIds(Booking booking) {
+        return booking.passengers()
+                      .stream()
+                      .map(Passenger::passengerNumber)
+                      .toList();
+    }
+    
+    // --- 4️⃣ Parallel fan-out ---
+    private Future<CompositeFuture> fetchBaggagesAndTickets(
+            Pnr pnr,
+            List<Integer> passengerIds
+    ) {
+        return Future.all(
+                baggageRepo.findBaggagesOfPassengers(passengerIds, pnr.value()),
+                ticketRepo.findTicketUrls(passengerIds, pnr.value())
+        );
+    }
+    
+    // --- 5️⃣ Aggregate result ---
+    private Booking aggregateBookingDetails(Booking booking, CompositeFuture cf) {
+        List<BaggageAllowance> baggages = cf.resultAt(0);
+        Map<Integer, String> tickets = cf.resultAt(1);
+        return booking.withDetails(baggages, tickets);
     }
 }

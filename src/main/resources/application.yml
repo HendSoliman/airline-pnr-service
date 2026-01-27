@@ -2,7 +2,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info, prometheus, metrics
+        include: health, info, prometheus, metrics ,threaddump
   metrics:
     tags:
       application: ${spring.application.name}
@@ -21,12 +21,6 @@ spring:
   swagger-ui:
     url: /openapi/pnr-spec.yml
     path: /swagger-ui.html
-
-
-
-  threads:
-    virtual:
-      enabled=true:
 
   logging:
   pattern:

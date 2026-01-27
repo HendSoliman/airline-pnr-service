@@ -2,10 +2,8 @@ package com.airline.pnr.controller;
 
 import com.airline.pnr.application.BookingAggregatorQueryService;
 import com.airline.pnr.config.ThreadLog;
-import com.airline.pnr.model.Booking;
 import com.airline.pnr.openapi.api.BookingApi;
 import com.airline.pnr.openapi.model.BookingResponse;
-import io.vertx.core.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -27,36 +25,22 @@ public class PnrQueryController implements BookingApi {
 
     @Override
     public Mono<ResponseEntity<BookingResponse>> getBookingByPnr(String pnr, ServerWebExchange exchange) {
-//        Future<Booking> bookingInfoResult =bookingInfoQueryService.execute(pnr);
-//        // 2. Convert to Mono and map to the response
-//        return Mono.fromCompletionStage(bookingInfoResult.toCompletionStage())
-//                   .map(booking -> ResponseEntity.ok(mapper.toResponse(booking)))
-//                   .defaultIfEmpty(ResponseEntity.notFound().build());
-//        
-//        
         log.info("Controller ENTER pnr={} | {}", pnr, ThreadLog.current());
         
-        Future<Booking> future = bookingInfoQueryService.execute(pnr);
-        
-        log.info("Controller AFTER service call | {}", ThreadLog.current());
-        
-        return Mono.fromCompletionStage(future.toCompletionStage())
+        return Mono.fromCompletionStage(
+                           bookingInfoQueryService.execute(pnr)
+                                                  .toCompletionStage()
+                   )
+                   .map(mapper::toResponse)                 // Domain → API
+                   .map(ResponseEntity::ok)                 // HTTP boundary
                    .doOnSubscribe(s ->
-                           log.info("Mono SUBSCRIBED | {}", ThreadLog.current())
+                           log.info("Controller SUBSCRIBED | {}", ThreadLog.current())
                    )
-                   .doOnNext(b ->
-                           log.info("Mono ON_NEXT | {}", ThreadLog.current())
-                   )
-                   .map(booking -> {
-                       log.info("Mapping response | {}", ThreadLog.current());
-                       return ResponseEntity.ok(mapper.toResponse(booking));
-                   })
-                   .doFinally(s ->
+                   .doFinally(sig ->
                            log.info("Controller FINALLY | {}", ThreadLog.current())
                    );
     }
-        
-    }
+}
     
 
 
