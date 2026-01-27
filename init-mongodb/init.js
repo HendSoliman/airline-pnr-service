@@ -45,7 +45,7 @@ db.getCollection('baggage_allowances').insertOne({
 });
 
 /* E-TICKETS */
-db.getCollection('etickets').insertOne({
+db.getCollection('tickets').insertOne({
   bookingReference: "GHTW42",
   passengerNumber: 2,
   ticketUrl: "emirates.com?ticket=someTicketRef"

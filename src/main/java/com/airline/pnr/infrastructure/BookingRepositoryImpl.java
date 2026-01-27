@@ -2,7 +2,6 @@ package com.airline.pnr.infrastructure;
 
 
 import com.airline.pnr.application.contract.BookingDomainRepo;
-import com.airline.pnr.config.ThreadLog;
 import com.airline.pnr.domain.exception.BookingNotFoundException;
 import com.airline.pnr.infrastructure.db.ReactiveBookingRepository;
 import com.airline.pnr.infrastructure.mapper.BookingEntityMapper;
@@ -25,18 +24,26 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
         this.repo = repo;
         this.mapper = mapper;
     }
-    
-    
     @Override
     public Future<Booking> findByPnr(String pnr) {
-        
-        log.debug("Repo ENTER pnr={} | {}", pnr, ThreadLog.current());
-
         return Future.fromCompletionStage(
                 repo.findByBookingReference(pnr)
                     .map(mapper::toReadModel)
                     .switchIfEmpty(Mono.error(new BookingNotFoundException(pnr)))
                     .toFuture()
         );
+        
     }
 }
+//    @Override
+//    public Future<Booking> findByPnr(String pnr) {
+//
+//        log.debug("Repo ENTER pnr={} | {}", pnr, ThreadLog.current());
+//
+//        return Future.fromCompletionStage(
+//                repo.findByBookingReference(pnr)
+//                    .map(mapper::toReadModel)
+//                    .switchIfEmpty(Mono.error(new BookingNotFoundException(pnr)))
+//                    .toFuture()
+//        );
+//    }

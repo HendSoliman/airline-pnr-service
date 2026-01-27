@@ -16,7 +16,7 @@ spring:
 
 
   jackson:
-    default-property-inclusion=non_absent:
+    default-property-inclusion: non_null
     springdoc:
   swagger-ui:
     url: /openapi/pnr-spec.yml
@@ -24,8 +24,8 @@ spring:
 
   logging:
   pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+#    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
   level:
     org:
       springframework:
@@ -38,5 +38,6 @@ spring:
     com:
       airline:
         pnr: DEBUG
+
 
 

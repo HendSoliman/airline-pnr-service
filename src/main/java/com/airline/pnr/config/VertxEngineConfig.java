@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.jackson.DatabindCodec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +12,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class VertxEngineConfig {
-    @Value("${spring.data.mongodb.uri}")
-    private String mongoUri;
+
+//    @Value("${spring.data.mongodb.uri}")
+//    private String mongoUri;
     
     @Bean
     public Vertx vertx() {

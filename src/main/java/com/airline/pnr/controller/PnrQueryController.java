@@ -1,7 +1,6 @@
 package com.airline.pnr.controller;
 
 import com.airline.pnr.application.BookingAggregatorQueryService;
-import com.airline.pnr.config.ThreadLog;
 import com.airline.pnr.openapi.api.BookingApi;
 import com.airline.pnr.openapi.model.BookingResponse;
 import org.slf4j.Logger;
@@ -17,31 +16,24 @@ public class PnrQueryController implements BookingApi {
     
     private final BookingAggregatorQueryService bookingInfoQueryService;
     private final BookingResponseMapper mapper;
-
+    
     public PnrQueryController(BookingAggregatorQueryService bookingInfoQueryService, BookingResponseMapper mapper) {
         this.bookingInfoQueryService = bookingInfoQueryService;
         this.mapper = mapper;
     }
-
+    
     @Override
     public Mono<ResponseEntity<BookingResponse>> getBookingByPnr(String pnr, ServerWebExchange exchange) {
-        log.info("Controller ENTER pnr={} | {}", pnr, ThreadLog.current());
-        
+        log.info("Fetching  pnr={} ", pnr);
         return Mono.fromCompletionStage(
                            bookingInfoQueryService.execute(pnr)
+                                                  // CRITICAL: Map to response BEFORE leaving Vert.x context
+                                                  .map(mapper::toResponse)
                                                   .toCompletionStage()
                    )
-                   .map(mapper::toResponse)                 // Domain → API
-                   .map(ResponseEntity::ok)                 // HTTP boundary
-                   .doOnSubscribe(s ->
-                           log.info("Controller SUBSCRIBED | {}", ThreadLog.current())
-                   )
-                   .doFinally(sig ->
-                           log.info("Controller FINALLY | {}", ThreadLog.current())
-                   );
+                   
+                   .map(ResponseEntity::ok)
+                   .doOnNext(res -> log.info("[Controller] READY pnr={} | Thread={}", pnr, Thread.currentThread().getName()))
+                   .doFinally(sig -> log.info("[Controller] DONE pnr={} | Signal={} | Thread={}", pnr, sig, Thread.currentThread().getName()));
     }
 }
-    
-
-
-    

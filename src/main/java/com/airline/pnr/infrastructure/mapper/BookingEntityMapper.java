@@ -39,8 +39,8 @@ public class BookingEntityMapper {
                                     p.lastName(),
                                     CustomerId.ofNullable(p.customerId()),
                                     p.seat(),
-                                    null, // ticketUrl (to be stitched)
-                                    null  // baggage (to be stitched)
+                                    null,
+                                    null
                             ))
                             .collect(Collectors.toList());
     }

@@ -2,27 +2,22 @@ package com.airline.pnr.infrastructure;
 
 
 import com.airline.pnr.application.contract.TicketDomainRepo;
-import com.airline.pnr.infrastructure.db.ReactiveBookingRepository;
 import com.airline.pnr.infrastructure.db.ReactiveTicketRepository;
 import com.airline.pnr.infrastructure.entities.TicketEntity;
-import com.mongodb.reactivestreams.client.MongoClient;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 public class TicketRepositoryImpl implements TicketDomainRepo {
     
     private static final Logger log = LoggerFactory.getLogger(TicketRepositoryImpl.class);
-    public static final String TICKETS_DB = "tickets";
-    
+
     private final ReactiveTicketRepository repo;
     
     public TicketRepositoryImpl(ReactiveTicketRepository repo) {
