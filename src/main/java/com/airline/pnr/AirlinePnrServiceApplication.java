@@ -6,8 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 @SpringBootApplication
-@EnableReactiveMongoRepositories
-@ComponentScan(basePackages = {"com.airline.pnr"})
+//@EnableReactiveMongoRepositories
 public class AirlinePnrServiceApplication {
 
 	public static void main(String[] args) {

@@ -21,6 +21,13 @@ public class BaggageRepositoryImpl implements BaggageDomainRepo {
         this.repo = repo;
     }
     
+    /**
+     * Finds baggage allowances for the given passenger IDs and PNR.
+     *
+     * @param passengerIds List of passenger IDs
+     * @param pnr          Booking reference (PNR)
+     * @return Future containing a List of BaggageAllowance
+     */
     @Override
     public Future<List<BaggageAllowance>> findBagsOfPassengers(List<Integer> passengerIds, String pnr) {
         log.debug("Repository accessing MongoDB for baggage...");

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
@@ -13,8 +14,9 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.when;
 
 
-@WebFluxTest(PnrQueryController.class)
+@WebFluxTest(controllers = PnrQueryController.class) // Narrow the focus here
 @DisplayName("PNR Query Controller Tests")
+@Import({GlobalErrorHandler.class, BookingResponseMapper.class})
 class PnrQueryControllerTest {
     
     @Autowired
@@ -22,7 +24,7 @@ class PnrQueryControllerTest {
     
     @MockitoBean
     private BookingQueryAdapter bookingQueryAdapter;
-    
+
     
     @Test
     @DisplayName("should return booking when PNR data")

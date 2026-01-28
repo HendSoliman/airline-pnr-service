@@ -10,5 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ReactiveTicketRepository extends ReactiveMongoRepository<TicketEntity, String> {
-    Flux<TicketEntity> findByBookingReferenceAndPassengerNumberIn(String pnr, List<Integer> ids);
+    Flux<TicketEntity> findByBookingReferenceAndPassengerNumberIn(String pnr, List<Integer> passengerIds);
 }

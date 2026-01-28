@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith({MockitoExtension.class, VertxExtension.class})
 class BaggageRepositoryImplTest {
     
-    
     @Mock
     private ReactiveBaggageRepository repo;
     

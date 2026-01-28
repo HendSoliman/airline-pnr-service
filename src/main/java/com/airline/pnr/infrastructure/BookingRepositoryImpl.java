@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+
 @Repository
 public class BookingRepositoryImpl implements BookingDomainRepo {
     private static final Logger log = LoggerFactory.getLogger(BookingRepositoryImpl.class);
@@ -22,6 +23,13 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
         this.repo = repo;
         this.mapper = mapper;
     }
+    
+    /**
+     * Finds a booking by its PNR (Passenger Name Record).
+     *
+     * @param pnr The booking reference (PNR)
+     * @return Future containing the Booking if found, otherwise an error
+     */
     @Override
     public Future<Booking> findByPnr(String pnr) {
         return Future.fromCompletionStage(
