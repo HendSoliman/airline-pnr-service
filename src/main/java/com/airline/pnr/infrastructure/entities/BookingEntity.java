@@ -22,14 +22,14 @@ public record BookingEntity(
         @LastModifiedDate Instant updatedAt
 )
 {
-    public record PassengerDbo(String firstName, Optional<String> middleName,
+    public record PassengerDbo(String firstName, String middleName,
                                String lastName, int passengerNumber, Optional<String>  customerId,
                                String seat)
     {
     }
     
-    public record FlightDbo(String flightNumber, String departureAirport, OffsetDateTime departureTimeStamp,
-                            String arrivalAirport, OffsetDateTime arrivalTimeStamp)
+    public record FlightDbo(String flightNumber, String departureAirport, Instant departureTimeStamp,
+                            String arrivalAirport, Instant arrivalTimeStamp)
     {
     }
 }

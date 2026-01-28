@@ -11,4 +11,20 @@ public record Passenger(
         String seat,
         String ticketUrl,
         BaggageAllowance baggage
-) {}
+)
+{
+    
+    
+    public Passenger withDetails(BaggageAllowance bag, String url) {
+        return new Passenger(
+                this.passengerNumber,
+                this.firstName,
+                this.middleName,
+                this.lastName,
+                this.customerId,
+                this.seat,
+                url,
+                bag
+        );
+    }
+}

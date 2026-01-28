@@ -9,6 +9,8 @@ import com.airline.pnr.openapi.model.FlightResponse;
 import com.airline.pnr.openapi.model.PassengerResponse;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,7 +49,7 @@ public class BookingResponseMapper {
         passengerResponse.setSeat(pax.seat());
         
         passengerResponse.setTicketUrl(pax.ticketUrl());
-        passengerResponse.setCustomerId(pax.customerId().value());
+        passengerResponse.setCustomerId(pax.customerId() != null ? pax.customerId().value() : null);
         
         if (pax.baggage() != null) {
             passengerResponse.setBaggage(new BaggageResponse().allowanceUnit(pax.baggage().allowanceUnit()).checkedAllowanceValue(pax.baggage().checkedAllowanceValue()).carryOnAllowanceValue(pax.baggage().carryOnAllowanceValue()));
@@ -66,10 +68,10 @@ public class BookingResponseMapper {
         flightResponse.setArrivalAirport(flight.arrivalAirport());
         
         if (flight.departureTimeStamp() != null) {
-            flightResponse.setDepartureTimeStamp(flight.departureTimeStamp());
+            flightResponse.setDepartureTimeStamp(flight.departureTimeStamp().atOffset(ZoneOffset.UTC));
         }
         if (flight.arrivalTimeStamp() != null) {
-            flightResponse.setArrivalTimeStamp(flight.arrivalTimeStamp());
+            flightResponse.setArrivalTimeStamp(flight.arrivalTimeStamp().atOffset(ZoneOffset.UTC));
         }
         return flightResponse;
     }

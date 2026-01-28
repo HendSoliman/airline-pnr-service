@@ -46,6 +46,7 @@ public class BaggageRepositoryImpl implements BaggageDomainRepo {
      */
     private BaggageAllowance mapToDomain(BaggageAllowanceEntity entity) {
         return new BaggageAllowance(
+                entity.passengerNumber(),
                 entity.allowanceUnit(),
                 entity.checkedAllowanceValue(),
                 entity.carryOnAllowanceValue()

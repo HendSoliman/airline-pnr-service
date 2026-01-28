@@ -21,7 +21,7 @@ public class BookingFixture {
             
             var james = new Passenger(
                     1, "James", null, "McGill", new CustomerId(null),
-                    "32D", null, new BaggageAllowance("kg", 30, 7)
+                    "32D", null, new BaggageAllowance(1,"kg", 30, 7)
             );
             
             var charles = new Passenger(

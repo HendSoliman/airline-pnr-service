@@ -9,6 +9,7 @@ import com.airline.pnr.model.Flight;
 import com.airline.pnr.model.Passenger;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class BookingMapper {
     /**
@@ -44,9 +45,9 @@ public class BookingMapper {
         return new Passenger(
                 passengerDbo.passengerNumber(),
                 passengerDbo.firstName(),
-                passengerDbo.middleName().orElse(""),
+                passengerDbo.middleName(),
                 passengerDbo.lastName(),
-                passengerDbo.customerId().map(CustomerId::new).orElse(null),
+                passengerDbo.customerId() == null ? null : new CustomerId(passengerDbo.customerId().get()),
                 passengerDbo.seat(),
                 null, // ticketUrl populated later
                 null  // baggage  populated later
