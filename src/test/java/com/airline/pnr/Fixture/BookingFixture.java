@@ -15,8 +15,8 @@ public class BookingFixture {
         public static Booking ofPnr(String pnr) {
             
             var flight = new Flight(
-                    "EK231", "DXB", OffsetDateTime.parse("2025-11-11T02:25:00Z"),
-                    "IAD", OffsetDateTime.parse("2025-11-11T08:25:00Z")
+                    "EK231", "DXB", Instant.parse("2025-11-11T02:25:00Z"),
+                    "IAD", Instant.parse("2025-11-11T08:25:00Z")
             );
             
             var james = new Passenger(

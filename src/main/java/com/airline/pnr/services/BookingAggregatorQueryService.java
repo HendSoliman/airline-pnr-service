@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service to aggregate booking details including baggage allowances and ticket URLs
+ */
 @Service
 public class BookingAggregatorQueryService {
     
