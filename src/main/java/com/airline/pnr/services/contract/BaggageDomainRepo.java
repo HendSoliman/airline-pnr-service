@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface BaggageDomainRepo {
     
-    Future<List<BaggageAllowance>> findBaggagesOfPassengers(List<Integer> passengerIds, String pnr);
+    Future<List<BaggageAllowance>> findBagsOfPassengers(List<Integer> passengerIds, String pnr);
 }
