@@ -23,6 +23,10 @@ paths:
           schema:
             type: string
             example: GHTW42
+            minLength: 5
+            maxLength: 6
+            pattern: '^[A-Z0-9]+$'
+
       responses:
         '200':
           description: Booking information retrieved successfully

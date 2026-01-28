@@ -2,6 +2,8 @@ package com.airline.pnr.controller;
 
 import com.airline.pnr.domain.exception.PnrDomainException;
 import com.airline.pnr.openapi.model.ProblemDetails;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ public class GlobalErrorHandler {
             case NoSuchElementException e -> createResponse(404, "Not Found", "Resource not found", request);
             // WebFlux specific validation exception
             case WebExchangeBindException e -> createResponse(400, "Bad Request", "Validation failed", request);
+            case ConstraintViolationException e -> createResponse(400, "Bad Request", "Invalid Request", request);
             case MethodNotAllowedException e -> createResponse(405, "Method Not Allowed",
                     "The method " + request.getMethod() + " is not supported for this endpoint", request);
             case ResponseStatusException e -> createResponse(e.getStatusCode().value(), "Not Found", "The requested endpoint does not exist", request);

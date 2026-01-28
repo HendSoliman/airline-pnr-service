@@ -1,7 +1,6 @@
 package com.airline.pnr.controller;
 
 import com.airline.pnr.domain.exception.BookingNotFoundException;
-import com.airline.pnr.infrastructure.BookingRepositoryImpl;
 import com.airline.pnr.openapi.model.ProblemDetails;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -12,9 +11,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Mono;
-
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -37,7 +35,7 @@ class GlobalErrorHandlerTest {
     @Test
     @DisplayName("404: NoSuchElementException ")
     void shouldHandleNotFound() {
-        String pnr = "MISSING";
+        String pnr = "GHTW42";
         when(bookingQueryAdapter.execute(pnr)).thenReturn(Mono.error(new BookingNotFoundException(pnr)));
         
         webTestClient.get()
@@ -49,7 +47,7 @@ class GlobalErrorHandlerTest {
                          var actual = result.getResponseBody();
                          var expected = new ProblemDetails()
                                  .status(404)
-                                 .title("Booking Not Found").detail("No booking exists for the provided reference: MISSING")
+                                 .title("Booking Not Found").detail("No booking exists for the provided reference: GHTW42")
                                  .instance("/booking/" + pnr)
                                  .type("about:blank");
                          
@@ -71,6 +69,7 @@ class GlobalErrorHandlerTest {
                      .expectBody(ProblemDetails.class)
                      .consumeWith(result -> {
                          var actual = result.getResponseBody();
+                         Assertions.assertNotNull(actual);
                          assertThat(actual.getTitle()).isEqualTo("Internal Server Error");
                          assertThat(actual.getDetail()).isEqualTo(errorMsg);
                          assertThat(actual.getStatus()).isEqualTo(500);
@@ -97,4 +96,24 @@ class GlobalErrorHandlerTest {
                      });
     }
     
+    
+    @DisplayName("400: Bad Request")
+    @Test
+    void shouldHandleBadRequest() {
+        // Arrange
+        String pnr = "!!!INVALID";
+        webTestClient.get()
+                     .uri("/booking/{pnr}", " ")
+                     .exchange()
+                     .expectStatus().isBadRequest()
+                     .expectBody(ProblemDetails.class)
+                     .consumeWith(result -> {
+                         var actual = result.getResponseBody();
+                         
+                         assertThat(actual).isNotNull();
+                         assertThat(actual.getStatus()).isEqualTo(400);
+                         assertThat(actual.getTitle()).isEqualTo("Bad Request");
+                         assertThat(actual.getDetail()).contains("Invalid Request");
+                     });
+    }
 }
