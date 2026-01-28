@@ -8,7 +8,6 @@ import com.airline.pnr.model.Flight;
 import com.airline.pnr.model.Passenger;
 
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 public class BookingFixture {

@@ -47,14 +47,14 @@ class BookingRepositoryImplTest {
         String pnr = "GHTW42";
         
         BookingEntity.PassengerDbo passenger1 =
-                new BookingEntity.PassengerDbo("John", java.util.Optional.empty(),
-                        "Doe", 1, java.util.Optional.empty(), "12A");
+                new BookingEntity.PassengerDbo("John", null,
+                        "Doe", 1, null, "12A");
         
         BookingEntity.FlightDbo flight =
                 new BookingEntity.FlightDbo("FL123", "JFK",
-                        Instant.now().atOffset(java.time.ZoneOffset.UTC),
+                        Instant.now(),
                         "LAX",
-                        Instant.now().plusSeconds(3600).atOffset(java.time.ZoneOffset.UTC)
+                        Instant.now().plusSeconds(3600)
                 );
         
         BookingEntity entity1 =
