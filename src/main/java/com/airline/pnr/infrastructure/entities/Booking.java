@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Document(collection ="bookings")
-public record BookingDbo(
+public record Booking(
         @Id String id,
         @Indexed String bookingReference,
         String cabinClass,

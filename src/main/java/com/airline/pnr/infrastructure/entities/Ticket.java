@@ -7,9 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Optional;
 
-@Document("etickets")
+@Document("tickets")
 @CompoundIndex(name = "pnr_passenger_idx", def = "{'bookingReference': 1, 'passengerNumber': 1}")
-public record ETicketDbo(
+public record Ticket(
         @Id
         String id,
         String bookingReference,

@@ -1,4 +1,4 @@
-package com.airline.pnr.domain.model;
+package com.airline.pnr.model;
 
 public record BaggageAllowance(
         String allowanceUnit,
