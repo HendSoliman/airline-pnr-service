@@ -23,6 +23,10 @@ paths:
           schema:
             type: string
             example: GHTW42
+            minLength: 5
+            maxLength: 6
+            pattern: '^[A-Z0-9]+$'
+
       responses:
         '200':
           description: Booking information retrieved successfully
@@ -51,13 +55,13 @@ components:
         passengers:
           type: array
           items:
-            $ref: '#/components/schemas/Passenger'
+            $ref: '#/components/schemas/PassengerResponse'
         flights:
           type: array
           items:
-            $ref: '#/components/schemas/Flight'
+            $ref: '#/components/schemas/FlightResponse'
 
-    Passenger:
+    PassengerResponse:
       type: object
       properties:
         passengerNumber:
@@ -78,9 +82,9 @@ components:
           nullable: true
           example: emirates.com?ticket=someTicketRef
         baggage:
-          $ref: '#/components/schemas/Baggage'
+          $ref: '#/components/schemas/BaggageResponse'
 
-    Baggage:
+    BaggageResponse:
       type: object
       properties:
         allowanceUnit:
@@ -93,7 +97,7 @@ components:
           type: integer
           example: 7
 
-    Flight:
+    FlightResponse:
       type: object
       properties:
         flightNumber:
