@@ -98,9 +98,9 @@ Controller → Application Service → Domain Repositories → Infrastructure
 ---
 
 ## Output result 
-- ![High Level flow ](screenshots/High-level-flow.png)
 - ![Sample Response 200](screenshots/api-200.png)
-- ![Grafana](screenshots/vertx-webflux-threadmodel-grafana.png)
+- ### Blocking Thread (No vert.x )![Before vert.x](screenshots/Before-vert.x.png)
+- ### Non-Blocking using vert.x ![Grafana](screenshots/vertx-webflux-threadmodel-grafana.png)
 - ![Sample Response 400](screenshots/api-400-bad-request.png)
 - ![Sample Response 404](screenshots/api-404-Booking-non-found.png)
 - ![Sample Response 404](screenshots/api-404-non-found-path.png)
