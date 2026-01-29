@@ -16,6 +16,20 @@ The service exposes a **RESTful API** that retrieves and aggregates booking info
 - Explicit error mapping
 - Zero blocking calls
 
+##  References Books and Docs
+- [Vert.x in Action]( https://learning.oreilly.com/library/view/vert-x-in-action/)
+- [Modern Java in Action](https://learning.oreilly.com/library/view/modern-java-in/9781617293566/)
+- Spring Boot Documentation
+- Monitoring Java Applications with Prometheus and Grafana
+- https://docs.spring.io/spring-data/mongodb/reference/mongodb/mapping/custom-conversions.html
+- https://docs.spring.io/spring-data/mongodb/reference/mongodb/mapping/document-references.html#page-title
+- Pattern Matching for switch Expressions and Statements
+  -https://docs.spring.io/spring-framework/reference/testing/webtestclient.html
+- https://medium.com/@eng.hibrahem/ddd-and-clean-architecture-part-1-9a514b964395
+- https://www.baeldung.com/spring-vertx
+-  https://www.baeldung.com/vertx
+- https://vertx.io/docs/vertx-mongo-client/java/
+-  Vert.x OpenAPI Preview https://vertx.io/docs/vertx-openapi/java/#_openapicontract
 
 ### Primary Capability
 
@@ -65,9 +79,6 @@ This service demonstrates how to:
 | Containerization | Docker            | Latest   | Deployment readiness         |
 
 ---
-
-## Architectural flow
-
 ### Clean Architecture ( Hexagonal Pattern - Read Model )
 ![High Level flow ](screenshots/High-level-flow.png)
 ```
@@ -98,9 +109,8 @@ Controller → Application Service → Domain Repositories → Infrastructure
 ---
 
 ## Output result 
-- ![High Level flow ](screenshots/High-level-flow.png)
-- ![Sample Response 200](screenshots/api-200.png)
 - ![Grafana](screenshots/vertx-webflux-threadmodel-grafana.png)
+- ![Sample 
 - ![Sample Response 400](screenshots/api-400-bad-request.png)
 - ![Sample Response 404](screenshots/api-404-Booking-non-found.png)
 - ![Sample Response 404](screenshots/api-404-non-found-path.png)
@@ -365,7 +375,3 @@ Once the application is running, access Swagger at:
 http://localhost:8080/swagger-ui/index.html
 ```
 
-
-## Final Notes
-
-This project focuses on correctness, clarity, and reactive design principles while maintaining a prod
