@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.StructuredTaskScope;
 
 @Service
 public class BookingAggregatorQueryService {
@@ -34,8 +35,9 @@ public class BookingAggregatorQueryService {
     
     public Booking execute(String pnr) {
 
-//       return executeWithoutVirtualThreads(pnr);
-        return executeWithVirtualThreads(pnr);
+//       return executeWithoutVirtualThreads(pnr);     // Blocking operation
+        return executeWithVirtualThreads(pnr);     //     using VirtualThread cheap blocking
+//        return executeWithVirtualThreadsStructuredTaskScope(pnr);      // using StructuredTaskScope
     }
     
     private Booking executeWithoutVirtualThreads(String pnr) {
@@ -104,4 +106,54 @@ public class BookingAggregatorQueryService {
             throw new RuntimeException("Virtual Thread Task Failed", e);
         }
     }
+    
+    
+    // Still in preview
+//    private Booking executeWithVirtualThreadsStructuredTaskScope(String pnr) {
+//        long startTime = System.currentTimeMillis();
+//        ThreadLog.log(log, "ServiceStart",
+//                "Starting Virtual Thread Aggregation for PNR: %s", pnr);
+//
+//        Booking booking = bookingRepo.findByPnr(pnr);
+//        List<Integer> ids = booking.passengers()
+//                                   .stream()
+//                                   .map(Passenger::passengerNumber)
+//                                   .toList();
+//
+//        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+//
+//            var baggageTask = scope.fork(() -> {
+//                ThreadLog.log(log, "BaggageTask",
+//                        "Baggage task on %s", Thread.currentThread());
+//                return baggageRepo.findBaggagesOfPassengers(ids, pnr);
+//            });
+//
+//            var ticketTask = scope.fork(() -> {
+//                ThreadLog.log(log, "TicketTask",
+//                        "Ticket task on %s", Thread.currentThread());
+//                return ticketRepo.findTicketUrls(ids, pnr);
+//            });
+//
+//            scope.join();           // wait once
+//            scope.throwIfFailed();  // fail fast & cancel siblings
+//
+//            long duration = System.currentTimeMillis() - startTime;
+//            ThreadLog.log(log, "ServiceEnd",
+//                    "Parallel Aggregation Completed in %dms for PNR: %s",
+//                    duration, pnr);
+//
+//            return booking.withDetails(
+//                    baggageTask.resultNow(),
+//                    ticketTask.resultNow()
+//            );
+//
+//        } catch (Exception e) {
+//            ThreadLog.log(log, "ServiceError",
+//                    "Virtual Thread task failed for PNR: %s. Error: %s",
+//                    pnr, e.getMessage());
+//            throw new RuntimeException("Virtual Thread Task Failed", e);
+//        }
+//    }
+    
+    
 }
