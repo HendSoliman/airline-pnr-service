@@ -1,10 +1,13 @@
 package com.airline.pnr.services;
 
+import com.airline.pnr.domain.events.PnrFetchedEvent;
+import com.airline.pnr.domain.valueobjects.Pnr;
 import com.airline.pnr.model.BaggageAllowance;
 import com.airline.pnr.model.Booking;
 import com.airline.pnr.model.Passenger;
 import com.airline.pnr.services.contract.BaggageDomainRepo;
 import com.airline.pnr.services.contract.BookingDomainRepo;
+import com.airline.pnr.services.contract.EventPublisherPort;
 import com.airline.pnr.services.contract.TicketDomainRepo;
 import io.vertx.core.Future;
 import org.slf4j.Logger;
@@ -26,12 +29,15 @@ public class BookingAggregatorQueryService {
     private final BaggageDomainRepo baggageRepo;
     private final TicketDomainRepo ticketRepo;
     
+    private final EventPublisherPort eventPublisher;
+    
     public BookingAggregatorQueryService(BookingDomainRepo bookingRepo,
                                          BaggageDomainRepo baggageRepo,
-                                         TicketDomainRepo ticketRepo) {
+                                         TicketDomainRepo ticketRepo, EventPublisherPort eventPublisher) {
         this.bookingRepo = bookingRepo;
         this.baggageRepo = baggageRepo;
         this.ticketRepo = ticketRepo;
+        this.eventPublisher = eventPublisher;
     }
     public Future<Booking> execute(String pnr) {
         long start = System.currentTimeMillis();
@@ -40,7 +46,12 @@ public class BookingAggregatorQueryService {
                           .onSuccess(b -> log.info("Core booking fetched for pnr={}", pnr))
                           .onFailure(e -> log.warn("Booking aggregation failed for pnr={}", pnr))
                           .compose(this::aggregateBagsAndTickets)
-                          .onSuccess(b -> log.info("Service DONE in {}ms", System.currentTimeMillis() - start));
+                          .onSuccess(b -> {
+                             eventPublisher.publish(new PnrFetchedEvent(pnr));
+                                  
+                                  log.info("Service DONE in {}ms", System.currentTimeMillis() - start);
+                          }
+                          );
     }
     
     
