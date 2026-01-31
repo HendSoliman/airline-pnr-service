@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,9 @@ public class TicketRepositoryImpl implements TicketDomainRepo {
     }
     */
         return Future.fromCompletionStage(
+                
                 repo.findByBookingReferenceAndPassengerNumberIn(pnr, ids)
+                    .timeout(Duration.ofSeconds(1))
                     .flatMap(ticket -> {
                         
                         if (ticket.ticketUrl() != null && ticket.ticketUrl().isPresent()) {
@@ -57,6 +60,12 @@ public class TicketRepositoryImpl implements TicketDomainRepo {
                         }
                         return Mono.empty();
                     })
+                    // observability
+                    .doOnError(ex -> log.warn(
+                            "Ticket lookup failed. pnr={}, idsCount={}, reason={}",
+                            pnr, ids.size(), ex.toString(), ex
+                    ))
+                    .onErrorResume(ex -> Mono.empty())
                     .collectMap(Map.Entry::getKey, Map.Entry::getValue)
                     .toFuture()
         );

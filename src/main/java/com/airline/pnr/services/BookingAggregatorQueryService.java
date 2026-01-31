@@ -1,7 +1,6 @@
 package com.airline.pnr.services;
 
 import com.airline.pnr.domain.events.PnrFetchedEvent;
-import com.airline.pnr.domain.valueobjects.Pnr;
 import com.airline.pnr.model.BaggageAllowance;
 import com.airline.pnr.model.Booking;
 import com.airline.pnr.model.Passenger;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service to aggregate booking details including baggage allowances and ticket URLs
@@ -42,16 +42,15 @@ public class BookingAggregatorQueryService {
     public Future<Booking> execute(String pnr) {
         long start = System.currentTimeMillis();
         log.info("Service: Fetching booking for PNR: {}", pnr);
+        log.info("Service: {}", Thread.currentThread());
+        
         return bookingRepo.findByPnr(pnr)
-                          .onSuccess(b -> log.info("Core booking fetched for pnr={}", pnr))
-                          .onFailure(e -> log.warn("Booking aggregation failed for pnr={}", pnr))
+                          .onSuccess(b -> log.info("Core booking fetched for pnr={}", pnr)).onFailure(e -> log.warn("Core booking fetch failed for pnr={}", pnr))
                           .compose(this::aggregateBagsAndTickets)
                           .onSuccess(b -> {
                              eventPublisher.publish(new PnrFetchedEvent(pnr));
-                                  
-                                  log.info("Service DONE in {}ms", System.currentTimeMillis() - start);
-                          }
-                          );
+                              log.info("Service DONE in {}ms", System.currentTimeMillis() - start);
+                          }).onFailure(e -> log.warn("Service FAILED in {}ms for pnr={}", System.currentTimeMillis() - start, pnr, e));
     }
     
     
@@ -62,15 +61,34 @@ public class BookingAggregatorQueryService {
         
         // Parallel calls
         return fetchBaggageAndTickets(booking.bookingReference().value(), passengerIds)
+                .recover(ex -> {
+                    log.warn("Baggage enrichment failed, fallback empty. pnr={}", booking.bookingReference().value(), ex);
+                    return Future.succeededFuture(new BookingDetails(List.of(), Map.of()));
+                })
                 .map(details -> booking.withDetails(details.baggage(), details.tickets()));
     }
     
     private Future<BookingDetails> fetchBaggageAndTickets(String pnr, List<Integer> ids) {
-        Future<List<BaggageAllowance>> baggageFuture =
-                baggageRepo.findBagsOfPassengers(ids, pnr);
         
-        Future<Map<Integer, String>> ticketFuture =
-                ticketRepo.findTicketUrls(ids, pnr);
+        Future<List<BaggageAllowance>> baggageFuture = baggageRepo.findBagsOfPassengers(ids, pnr)
+                                                                  .timeout(20, TimeUnit.MILLISECONDS)
+                                                                  .onSuccess(t -> log.info("Baags repo success pnr={}, count={}", pnr, t.size()))
+                                                                  .onFailure(fail -> log.warn("Baggage fetch failed for pnr={}", pnr, fail))
+                                                                  .recover(ex -> {
+                                                                      log.warn("Revovering from bggage...... failed, fallback empty. pnr={}", pnr, ex);
+                                                                      return Future.succeededFuture(List.of());
+                                                                  });
+
+
+//        ----------
+        Future<Map<Integer, String>> ticketFuture = ticketRepo.findTicketUrls(ids, pnr)
+                                                              .timeout(20, TimeUnit.MILLISECONDS)
+                                                              .onSuccess(t -> log.info("Ticket repo success pnr={}, count={}", pnr, t.size()))
+                                                              .onFailure( fail -> log.warn("Ticket fetch failed for pnr={}", pnr, fail))
+                                                              .recover(ex -> {
+                                                                        log.warn("Recovering,,,,,, Ticket failed, fallback empty. pnr={}", pnr, ex);
+                                                                        return Future.succeededFuture(Map.of());
+        });
         
         return Future.all(baggageFuture, ticketFuture)
                      .map(compositeFuture -> new BookingDetails(
