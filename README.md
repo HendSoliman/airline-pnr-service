@@ -105,7 +105,7 @@ Controller → Application Service → Domain Repositories → Infrastructure
 - ![Sample Response 404](screenshots/api-404-Booking-non-found.png)
 - ![Sample Response 404](screenshots/api-404-non-found-path.png)
 - ![Jmeter plan calls](screenshots/J-meter-load-test-plan.png)
-- 
+- - ### increasing GC performance using ZGC ![Grafana](screenshots/ZGC-increasing-performance.png)
 
 ### Retrieve Booking by PNR
 

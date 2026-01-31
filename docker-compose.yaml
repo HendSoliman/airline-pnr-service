@@ -26,6 +26,8 @@ services:
     image: airline-pnr-service:latest
     container_name: pnr-service
     environment:
+#      jvm_gc_memory_allocated_bytes_total , jvm_gc_pause_seconds_sum , jvm_gc_pause_seconds
+      - JAVA_TOOL_OPTIONS=-XX:+UseZGC -Xlog:gc*:file=/tmp/gc.log:time,uptime,level,tags:filecount=5,filesize=20M
       - MONGO_USER=${DB_USER}
       - MONGO_PASS=${DB_PASSWORD}
     ports:
