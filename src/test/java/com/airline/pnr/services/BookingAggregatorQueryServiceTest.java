@@ -7,6 +7,7 @@ import com.airline.pnr.model.BaggageAllowance;
 import com.airline.pnr.model.Booking;
 import com.airline.pnr.services.contract.BaggageDomainRepo;
 import com.airline.pnr.services.contract.BookingDomainRepo;
+import com.airline.pnr.services.contract.EventPublisherPort;
 import com.airline.pnr.services.contract.TicketDomainRepo;
 import io.vertx.core.Future;
 import io.vertx.junit5.VertxExtension;
@@ -38,6 +39,9 @@ class BookingAggregatorQueryServiceTest {
     
     @Mock
     TicketDomainRepo ticketRepo;
+    
+    @Mock
+    EventPublisherPort eventPublisherPort;
     
     @InjectMocks
     BookingAggregatorQueryService service;

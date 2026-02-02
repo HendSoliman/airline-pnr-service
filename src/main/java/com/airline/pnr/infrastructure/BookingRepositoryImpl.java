@@ -32,6 +32,7 @@ public class BookingRepositoryImpl implements BookingDomainRepo {
      */
     @Override
     public Future<Booking> findByPnr(String pnr) {
+        log.info("Repo Thread: {}", Thread.currentThread());
         return Future.fromCompletionStage(
                 repo.findByBookingReference(pnr)
                     .switchIfEmpty(Mono.error(new BookingNotFoundException(pnr)))

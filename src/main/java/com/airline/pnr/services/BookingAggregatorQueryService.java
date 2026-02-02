@@ -42,10 +42,12 @@ public class BookingAggregatorQueryService {
     public Future<Booking> execute(String pnr) {
         long start = System.currentTimeMillis();
         log.info("Service: Fetching booking for PNR: {}", pnr);
-        log.info("Service: {}", Thread.currentThread());
+        log.info("Service builds an async pipeline.: {}", Thread.currentThread());
+        
         
         return bookingRepo.findByPnr(pnr)
-                          .onSuccess(b -> log.info("Core booking fetched for pnr={}", pnr)).onFailure(e -> log.warn("Core booking fetch failed for pnr={}", pnr))
+                          .onSuccess(b -> log.info("Core booking fetched for pnr={}", pnr))
+                          .onFailure(e -> log.warn("Core booking fetch failed for pnr={}", pnr))
                           .compose(this::aggregateBagsAndTickets)
                           .onSuccess(b -> {
                              eventPublisher.publish(new PnrFetchedEvent(pnr));
